@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Anamnese – LUCASMORAESPROTEAM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--red:#cc1a1a;--bg:#0a0a0a;--surface:#161616;--surface2:#1e1e1e;--border:#2a2a2a;--white:#fff;--muted:#888}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--white);min-height:100vh}
+    header{background:#000;border-bottom:2px solid var(--red);padding:16px 24px;text-align:center}
+    .brand{font-size:1.1rem;font-weight:700;letter-spacing:.06em}
+    .brand span{color:var(--red)}
+    .brand-sub{font-size:.62rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:3px}
+    .progress-wrap{background:#111;border-bottom:1px solid var(--border);display:flex}
+    .step-tab{flex:1;padding:10px 2px;font-size:.58rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);text-align:center;border-bottom:3px solid transparent;transition:all .2s}
+    .step-tab.active{color:var(--white);border-bottom-color:var(--red)}
+    .step-tab.done{color:#444}
+    .form-wrap{max-width:680px;margin:0 auto;padding:24px 16px 60px}
+    .form-section{display:none}
+    .form-section.active{display:block}
+    .section-header{margin-bottom:18px}
+    .section-header h2{font-size:1.1rem;font-weight:700}
+    .section-header p{font-size:.76rem;color:var(--muted);margin-top:3px}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:12px}
+    .card-title{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);margin-bottom:14px}
+    .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .field-grid.thirds{grid-template-columns:1fr 1fr 1fr}
+    .field{display:flex;flex-direction:column;gap:5px}
+    .field label{font-size:.72rem;font-weight:500;color:#bbb}
+    .field label span{color:var(--red)}
+    .field input,.field select{font-family:'Inter',sans-serif;font-size:.86rem;padding:9px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface2);color:var(--white);outline:none;transition:border-color .15s;width:100%}
+    .field input:focus,.field select:focus{border-color:var(--red)}
+    .field input::placeholder{color:#444}
+    .field select option{background:#1e1e1e}
+    .input-suffix{display:flex;align-items:center}
+    .input-suffix input{border-radius:6px 0 0 6px}
+    .input-suffix .suffix{padding:9px 10px;background:#222;border:1px solid var(--border);border-left:none;border-radius:0 6px 6px 0;font-size:.72rem;font-weight:600;color:var(--red);white-space:nowrap}
+    .meal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .meal-item label{font-size:.7rem;font-weight:500;color:#bbb;display:block;margin-bottom:4px}
+    .meal-item input[type="time"]{font-family:'Inter',sans-serif;font-size:.86rem;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface2);color:var(--white);width:100%;outline:none}
+    .meal-item input[type="time"]:focus{border-color:var(--red)}
+    .days-row{display:flex;gap:8px;flex-wrap:wrap}
+    .day-chip{width:42px;height:42px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);font-size:.68rem;font-weight:600;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;transition:all .15s}
+    .day-chip.selected{background:var(--red);border-color:var(--red);color:var(--white)}
+    .obj-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .obj-card{border:1px solid var(--border);border-radius:8px;padding:11px 13px;cursor:pointer;display:flex;align-items:center;gap:10px;background:var(--surface2);transition:all .15s}
+    .obj-card:hover{border-color:var(--red)}
+    .obj-card.selected{border-color:var(--red);background:#1f0808}
+    .obj-icon{font-size:1.2rem;flex-shrink:0}
+    .obj-label{font-size:.8rem;font-weight:600}
+    .obj-sub{font-size:.66rem;color:var(--muted);margin-top:1px}
+    .obj-check{margin-left:auto;width:18px;height:18px;border-radius:50%;border:1px solid #444;flex-shrink:0;position:relative;transition:all .15s}
+    .obj-card.selected .obj-check{background:var(--red);border-color:var(--red)}
+    .obj-card.selected .obj-check::after{content:'';position:absolute;left:5px;top:2px;width:5px;height:9px;border:2px solid #fff;border-top:none;border-left:none;transform:rotate(45deg)}
+    .photo-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .photo-slot{aspect-ratio:1/1;background:var(--surface2);border:2px dashed var(--border);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative;transition:border-color .2s}
+    .photo-slot:hover{border-color:var(--red)}
+    .photo-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+    .photo-slot .slot-label{font-size:.65rem;font-weight:600;text-transform:uppercase;color:var(--muted);margin-top:8px;text-align:center}
+    .photo-slot .slot-icon{opacity:.35}
+    .photo-slot .remove-btn{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.7);border:1px solid var(--red);color:var(--red);font-size:.7rem;font-weight:700;display:none;align-items:center;justify-content:center;cursor:pointer;z-index:2}
+    .photo-slot:hover .remove-btn{display:flex}
+    .photo-slot .badge{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.65);border:1px solid var(--border);border-radius:4px;font-size:.6rem;font-weight:700;color:#ccc;padding:2px 8px;text-transform:uppercase;pointer-events:none}
+    .photo-input-hidden{display:none}
+    .nav-buttons{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:10px}
+    .btn{font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;padding:10px 22px;border-radius:6px;border:none;cursor:pointer;transition:all .15s}
+    .btn-back{background:transparent;border:1px solid var(--border);color:var(--muted)}
+    .btn-back:hover{border-color:var(--red);color:var(--white)}
+    .btn-next{background:var(--red);color:var(--white);margin-left:auto}
+    .btn-next:hover{background:#e62020}
+    .btn-submit{background:var(--red);color:var(--white);margin-left:auto}
+    .btn-submit:hover{background:#e62020}
+    .btn-submit:disabled{background:#555;cursor:not-allowed}
+    .success-wrap{display:none;text-align:center;padding:60px 20px}
+    .success-wrap.active{display:block}
+    .success-icon{width:70px;height:70px;border-radius:50%;background:#1f0808;border:2px solid var(--red);margin:0 auto 20px;display:flex;align-items:center;justify-content:center}
+    .success-wrap h2{font-size:1.4rem;font-weight:700;margin-bottom:10px}
+    .success-wrap p{color:var(--muted);font-size:.84rem;line-height:1.6;max-width:340px;margin:0 auto}
+    .sending-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:16px;font-size:.9rem;color:var(--white)}
+    .sending-overlay.active{display:flex}
+    .send-status{font-size:.8rem;color:var(--muted);margin-top:4px}
+    .spinner{width:40px;height:40px;border:3px solid #333;border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @media(max-width:560px){.field-grid,.field-grid.thirds{grid-template-columns:1fr}.meal-grid{grid-template-columns:1fr 1fr}.obj-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand">LUCAS<span>MORAES</span>PROTEAM</div>
+  <div class="brand-sub">Ficha de Anamnese</div>
+</header>
+
+<div class="progress-wrap" id="progressWrap">
+  <div class="step-tab active">Pessoal</div>
+  <div class="step-tab">Medidas</div>
+  <div class="step-tab">Alimentação</div>
+  <div class="step-tab">Treino</div>
+  <div class="step-tab">Fotos</div>
+</div>
+
+<div class="form-wrap">
+
+  <!-- STEP 0 -->
+  <section class="form-section active" id="step-0">
+    <div class="section-header"><h2>Dados Pessoais</h2><p>Suas informações de contato</p></div>
+    <div class="card">
+      <p class="card-title">Identificação</p>
+      <div class="field-grid">
+        <div class="field" style="grid-column:1/-1"><label>Nome completo <span>*</span></label><input type="text" id="nome" placeholder="Seu nome completo"/></div>
+        <div class="field"><label>Data de nascimento</label><input type="date" id="dataNasc"/></div>
+        <div class="field"><label>Sexo</label><select id="sexo"><option value="">Selecione…</option><option>Masculino</option><option>Feminino</option></select></div>
+        <div class="field"><label>E-mail</label><input type="email" id="email" placeholder="seu@email.com"/></div>
+        <div class="field"><label>WhatsApp</label><input type="tel" id="telefone" placeholder="(11) 9 0000-0000" oninput="formatTel(this)" maxlength="16"/></div>
+      </div>
+    </div>
+    <div class="nav-buttons"><button class="btn btn-next" onclick="goStep(1)">Próximo →</button></div>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="form-section" id="step-1">
+    <div class="section-header"><h2>Medidas Corporais</h2><p>Seus dados físicos atuais</p></div>
+    <div class="card">
+      <p class="card-title">Peso, Altura & IMC</p>
+      <div class="field-grid thirds">
+        <div class="field"><label>Peso</label><div class="input-suffix"><input type="number" id="peso" placeholder="70" step="0.1"/><span class="suffix">kg</span></div></div>
+        <div class="field"><label>Altura</label><div class="input-suffix"><input type="number" id="altura" placeholder="170"/><span class="suffix">cm</span></div></div>
+        <div class="field"><label>IMC</label><div class="input-suffix"><input type="text" id="imc" readonly placeholder="—" style="color:#888"/><span class="suffix">kg/m²</span></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <p class="card-title">Complementar</p>
+      <div class="field-grid">
+        <div class="field"><label>% Gordura estimada</label><div class="input-suffix"><input type="number" id="gordura" placeholder="20" step="0.1"/><span class="suffix">%</span></div></div>
+        <div class="field"><label>Nível de atividade</label><select id="nivel"><option value="">Selecione…</option><option>Sedentário</option><option>Levemente ativo</option><option>Moderadamente ativo</option><option>Muito ativo</option></select></div>
+        <div class="field" style="grid-column:1/-1"><label>Restrições / condições de saúde</label><input type="text" id="restricoes" placeholder="Ex.: hipertensão, intolerância à lactose…"/></div>
+      </div>
+    </div>
+    <div class="nav-buttons"><button class="btn btn-back" onclick="goStep(0)">← Voltar</button><button class="btn btn-next" onclick="goStep(2)">Próximo →</button></div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="form-section" id="step-2">
+    <div class="section-header"><h2>Hábitos Alimentares</h2><p>Horários e preferências</p></div>
+    <div class="card">
+      <p class="card-title">Horários das Refeições</p>
+      <div class="meal-grid">
+        <div class="meal-item"><label>☀️ Café da manhã</label><input type="time" id="m1"/></div>
+        <div class="meal-item"><label>🍎 Lanche manhã</label><input type="time" id="m2"/></div>
+        <div class="meal-item"><label>🍽️ Almoço</label><input type="time" id="m3"/></div>
+        <div class="meal-item"><label>🥜 Lanche tarde</label><input type="time" id="m4"/></div>
+        <div class="meal-item"><label>🌙 Jantar</label><input type="time" id="m5"/></div>
+        <div class="meal-item"><label>🌛 Ceia</label><input type="time" id="m6"/></div>
+      </div>
+    </div>
+    <div class="card">
+      <p class="card-title">Preferências</p>
+      <div class="field-grid">
+        <div class="field"><label>Alimentos preferidos</label><input type="text" id="preferidos" placeholder="frango, arroz, frutas…"/></div>
+        <div class="field"><label>Não consome</label><input type="text" id="naoConsome" placeholder="fígado, brócolis…"/></div>
+        <div class="field" style="grid-column:1/-1"><label>Ingestão hídrica diária</label><select id="hidrica"><option value="">Selecione…</option><option>Menos de 1 L</option><option>1 – 1,5 L</option><option>1,5 – 2 L</option><option>2 – 2,5 L</option><option>Mais de 2,5 L</option></select></div>
+      </div>
+    </div>
+    <div class="nav-buttons"><button class="btn btn-back" onclick="goStep(1)">← Voltar</button><button class="btn btn-next" onclick="goStep(3)">Próximo →</button></div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="form-section" id="step-3">
+    <div class="section-header"><h2>Treino & Objetivo</h2><p>Sua rotina e meta principal</p></div>
+    <div class="card">
+      <p class="card-title">Dias de Treino na Semana</p>
+      <div class="days-row">
+        <div class="day-chip" onclick="toggleDay(this)">Seg</div>
+        <div class="day-chip" onclick="toggleDay(this)">Ter</div>
+        <div class="day-chip" onclick="toggleDay(this)">Qua</div>
+        <div class="day-chip" onclick="toggleDay(this)">Qui</div>
+        <div class="day-chip" onclick="toggleDay(this)">Sex</div>
+        <div class="day-chip" onclick="toggleDay(this)">Sáb</div>
+        <div class="day-chip" onclick="toggleDay(this)">Dom</div>
+      </div>
+    </div>
+    <div class="card">
+      <p class="card-title">Objetivo Principal</p>
+      <div class="obj-grid">
+        <div class="obj-card" onclick="selectObj(this,'Perda de gordura')"><span class="obj-icon">🔥</span><div><div class="obj-label">Perda de gordura</div><div class="obj-sub">Reduzir % de gordura</div></div><div class="obj-check"></div></div>
+        <div class="obj-card" onclick="selectObj(this,'Ganho de massa')"><span class="obj-icon">💪</span><div><div class="obj-label">Ganho de massa</div><div class="obj-sub">Hipertrofia muscular</div></div><div class="obj-check"></div></div>
+        <div class="obj-card" onclick="selectObj(this,'Performance')"><span class="obj-icon">⚡</span><div><div class="obj-label">Performance</div><div class="obj-sub">Força e resistência</div></div><div class="obj-check"></div></div>
+        <div class="obj-card" onclick="selectObj(this,'Recomposição corporal')"><span class="obj-icon">⚖️</span><div><div class="obj-label">Recomposição</div><div class="obj-sub">Gordura + músculo</div></div><div class="obj-check"></div></div>
+        <div class="obj-card" onclick="selectObj(this,'Saúde & bem-estar')"><span class="obj-icon">🌿</span><div><div class="obj-label">Saúde & bem-estar</div><div class="obj-sub">Qualidade de vida</div></div><div class="obj-check"></div></div>
+        <div class="obj-card" onclick="selectObj(this,'Outro')"><span class="obj-icon">🎯</span><div><div class="obj-label">Outro</div><div class="obj-sub">Personalizado</div></div><div class="obj-check"></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <p class="card-title">Tipo de Treino</p>
+      <div class="field-grid">
+        <div class="field"><label>Modalidade</label><select id="tipoTreino"><option value="">Selecione…</option><option>Musculação</option><option>Funcional / Crossfit</option><option>Corrida / Cardio</option><option>Artes marciais</option><option>Natação</option><option>Ciclismo</option><option>Yoga / Pilates</option><option>Outro</option></select></div>
+        <div class="field"><label>Observações</label><input type="text" id="obs" placeholder="Lesões, medicamentos…"/></div>
+      </div>
+    </div>
+    <div class="nav-buttons"><button class="btn btn-back" onclick="goStep(2)">← Voltar</button><button class="btn btn-next" onclick="goStep(4)">Próximo →</button></div>
+  </section>
+
+  <!-- STEP 4 - FOTOS -->
+  <section class="form-section" id="step-4">
+    <div class="section-header"><h2>Fotos</h2><p>4 ângulos para avaliação física (opcional)</p></div>
+    <div class="card">
+      <p class="card-title">Registro Fotográfico</p>
+      <div class="photo-grid">
+        <div class="photo-slot" id="slot0" onclick="triggerPhoto(0)"><svg class="slot-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="slot-label">Frente</span><img id="img0" src="" alt="" style="display:none"/><div class="badge">Frente</div><div class="remove-btn" onclick="removePhoto(event,0)">✕</div></div>
+        <div class="photo-slot" id="slot1" onclick="triggerPhoto(1)"><svg class="slot-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="slot-label">Costas</span><img id="img1" src="" alt="" style="display:none"/><div class="badge">Costas</div><div class="remove-btn" onclick="removePhoto(event,1)">✕</div></div>
+        <div class="photo-slot" id="slot2" onclick="triggerPhoto(2)"><svg class="slot-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="slot-label">Lat. Esq.</span><img id="img2" src="" alt="" style="display:none"/><div class="badge">Lat. Esq.</div><div class="remove-btn" onclick="removePhoto(event,2)">✕</div></div>
+        <div class="photo-slot" id="slot3" onclick="triggerPhoto(3)"><svg class="slot-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="slot-label">Lat. Dir.</span><img id="img3" src="" alt="" style="display:none"/><div class="badge">Lat. Dir.</div><div class="remove-btn" onclick="removePhoto(event,3)">✕</div></div>
+      </div>
+      <input type="file" class="photo-input-hidden" id="pi0" accept="image/*" onchange="loadPhoto(event,0)"/>
+      <input type="file" class="photo-input-hidden" id="pi1" accept="image/*" onchange="loadPhoto(event,1)"/>
+      <input type="file" class="photo-input-hidden" id="pi2" accept="image/*" onchange="loadPhoto(event,2)"/>
+      <input type="file" class="photo-input-hidden" id="pi3" accept="image/*" onchange="loadPhoto(event,3)"/>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn btn-back" onclick="goStep(3)">← Voltar</button>
+      <button class="btn btn-submit" id="btnEnviar" onclick="enviar()">✓ Enviar Ficha</button>
+    </div>
+  </section>
+
+  <!-- SUCCESS -->
+  <div class="success-wrap" id="successWrap">
+    <div class="success-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#cc1a1a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div>
+    <h2>Ficha enviada! 💪</h2>
+    <p>Seus dados foram recebidos com sucesso. Em breve o Lucas Moraes entrará em contato com suas orientações.</p>
+  </div>
+</div>
+
+<!-- SENDING OVERLAY -->
+<div class="sending-overlay" id="sendingOverlay">
+  <div class="spinner"></div>
+  <span id="sendingMsg">Enviando sua ficha…</span>
+  <span class="send-status" id="sendingStatus">Isso pode levar alguns segundos</span>
+</div>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx5rNAMC97rprIHv6qL9QXbumaBwUt8AM34jO-DMBAPJIO5Jaa0BFa4hWk4HDHs9hYzhQ/exec';
+let currentStep = 0;
+let selectedObj = '';
+let photoData = ['','','',''];
+
+function goStep(n) {
+  document.getElementById('step-'+currentStep).classList.remove('active');
+  const tabs = document.querySelectorAll('.step-tab');
+  tabs[currentStep].classList.remove('active');
+  tabs[currentStep].classList.add('done');
+  currentStep = n;
+  document.getElementById('step-'+currentStep).classList.add('active');
+  tabs[currentStep].classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function formatTel(el) {
+  let v = el.value.replace(/\D/g,'');
+  if(v.length>11) v=v.slice(0,11);
+  if(v.length<=2) el.value=v.length?'('+v:v;
+  else if(v.length<=7) el.value='('+v.slice(0,2)+') '+v.slice(2);
+  else el.value='('+v.slice(0,2)+') '+v.slice(2,7)+'-'+v.slice(7);
+}
+
+document.getElementById('peso').addEventListener('input', calcIMC);
+document.getElementById('altura').addEventListener('input', calcIMC);
+function calcIMC() {
+  const p = parseFloat(document.getElementById('peso').value);
+  const h = parseFloat(document.getElementById('altura').value)/100;
+  document.getElementById('imc').value = (p&&h) ? (p/(h*h)).toFixed(1) : '';
+}
+
+function toggleDay(el) { el.classList.toggle('selected'); }
+
+function selectObj(el, label) {
+  document.querySelectorAll('.obj-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedObj = label;
+}
+
+function triggerPhoto(idx) { document.getElementById('pi'+idx).click(); }
+
+function loadPhoto(e, idx) {
+  const file = e.target.files[0]; if(!file) return;
+  // compress to max 800px
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 800;
+      let w = img.width, h = img.height;
+      if(w > MAX || h > MAX) {
+        if(w > h) { h = Math.round(h*MAX/w); w = MAX; }
+        else { w = Math.round(w*MAX/h); h = MAX; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      photoData[idx] = canvas.toDataURL('image/jpeg', 0.7);
+      const imgEl = document.getElementById('img'+idx);
+      const slot = document.getElementById('slot'+idx);
+      imgEl.src = photoData[idx]; imgEl.style.display = 'block';
+      slot.querySelector('.slot-icon').style.display = 'none';
+      slot.querySelector('.slot-label').style.display = 'none';
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removePhoto(e, idx) {
+  e.stopPropagation(); photoData[idx] = '';
+  const img = document.getElementById('img'+idx); img.src=''; img.style.display='none';
+  const slot = document.getElementById('slot'+idx);
+  slot.querySelector('.slot-icon').style.display='';
+  slot.querySelector('.slot-label').style.display='';
+  document.getElementById('pi'+idx).value='';
+}
+
+async function enviar() {
+  const nome = document.getElementById('nome').value.trim();
+  if(!nome) { alert('Por favor, preencha seu nome completo.'); goStep(0); return; }
+
+  const btn = document.getElementById('btnEnviar');
+  btn.disabled = true;
+  document.getElementById('sendingOverlay').classList.add('active');
+  document.getElementById('sendingMsg').textContent = 'Enviando sua ficha…';
+  document.getElementById('sendingStatus').textContent = 'Aguarde, isso pode levar alguns segundos';
+
+  const days = [...document.querySelectorAll('.day-chip.selected')].map(d=>d.textContent);
+
+  const payload = {
+    data: new Date().toLocaleDateString('pt-BR'),
+    nome,
+    nascimento: document.getElementById('dataNasc').value,
+    sexo: document.getElementById('sexo').value,
+    email: document.getElementById('email').value.trim(),
+    telefone: document.getElementById('telefone').value.trim(),
+    peso: document.getElementById('peso').value,
+    altura: document.getElementById('altura').value,
+    imc: document.getElementById('imc').value,
+    gordura: document.getElementById('gordura').value,
+    nivel: document.getElementById('nivel').value,
+    restricoes: document.getElementById('restricoes').value,
+    cafeManha: document.getElementById('m1').value,
+    lancheManha: document.getElementById('m2').value,
+    almoco: document.getElementById('m3').value,
+    lancheTarde: document.getElementById('m4').value,
+    jantar: document.getElementById('m5').value,
+    ceia: document.getElementById('m6').value,
+    preferidos: document.getElementById('preferidos').value,
+    naoConsome: document.getElementById('naoConsome').value,
+    hidrica: document.getElementById('hidrica').value,
+    diasTreino: days.join(', '),
+    tipoTreino: document.getElementById('tipoTreino').value,
+    objetivo: selectedObj,
+    observacoes: document.getElementById('obs').value,
+    fotos: photoData
+  };
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    document.getElementById('sendingOverlay').classList.remove('active');
+    document.getElementById('progressWrap').style.display = 'none';
+    document.getElementById('step-4').classList.remove('active');
+    document.getElementById('successWrap').classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  } catch(err) {
+    document.getElementById('sendingOverlay').classList.remove('active');
+    btn.disabled = false;
+    alert('Erro ao enviar. Verifique sua conexão e tente novamente.');
+  }
+}
+</script>
+</body>
+</html>
