@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Painel – LUCASMORAESPROTEAM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--red:#cc1a1a;--red2:#ff2e2e;--bg:#0a0a0a;--surface:#161616;--surface2:#1e1e1e;--border:#2a2a2a;--white:#fff;--muted:#888}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--white);min-height:100vh}
+    header{background:#000;border-bottom:2px solid var(--red);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+    .brand{font-size:1.05rem;font-weight:700;letter-spacing:.06em}
+    .brand span{color:var(--red)}
+    .brand-sub{font-size:.6rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:3px}
+    .btn-refresh{font-family:'Inter',sans-serif;font-size:.76rem;font-weight:600;padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s}
+    .btn-refresh:hover{border-color:var(--red);color:var(--white)}
+    .dash{max-width:960px;margin:0 auto;padding:24px 20px 60px}
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+    .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 18px}
+    .stat-card.highlight{border-color:var(--red)}
+    .sc-label{font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+    .sc-value{font-size:1.8rem;font-weight:700;line-height:1}
+    .stat-card.highlight .sc-value{color:var(--red2)}
+    .sc-sub{font-size:.68rem;color:var(--muted);margin-top:4px}
+    .toolbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+    .search-input{flex:1;min-width:180px;font-family:'Inter',sans-serif;font-size:.84rem;padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--surface2);color:var(--white);outline:none}
+    .search-input:focus{border-color:var(--red)}
+    .search-input::placeholder{color:#444}
+    .filter-select{font-family:'Inter',sans-serif;font-size:.78rem;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--surface2);color:var(--white);outline:none;cursor:pointer}
+    .filter-select option{background:#1e1e1e}
+    .btn-csv{font-family:'Inter',sans-serif;font-size:.72rem;font-weight:600;padding:7px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s}
+    .btn-csv:hover{border-color:#22c55e;color:#22c55e}
+    .table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px}
+    table{width:100%;border-collapse:collapse;font-size:.8rem}
+    thead{background:#111}
+    thead th{padding:10px 14px;text-align:left;font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--border);cursor:pointer}
+    thead th:hover{color:var(--white)}
+    tbody tr{border-bottom:1px solid #1e1e1e;transition:background .1s}
+    tbody tr:last-child{border-bottom:none}
+    tbody tr:hover{background:#1a1a1a}
+    td{padding:10px 14px;vertical-align:middle}
+    .td-name{font-weight:600;white-space:nowrap}
+    .td-date{color:var(--muted);white-space:nowrap}
+    .badge-obj{display:inline-block;font-size:.62rem;font-weight:600;padding:2px 8px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:#ccc}
+    .td-actions{display:flex;gap:6px;justify-content:flex-end}
+    .tbl-btn{font-family:'Inter',sans-serif;font-size:.68rem;font-weight:600;padding:4px 10px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .15s}
+    .tbl-btn:hover{border-color:var(--red);color:var(--white)}
+    .empty-table{text-align:center;color:var(--muted);padding:40px;font-size:.84rem}
+    .loading{text-align:center;color:var(--muted);padding:40px;font-size:.84rem}
+    .spinner{display:inline-block;width:24px;height:24px;border:2px solid #333;border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;margin-right:10px;vertical-align:middle}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:100;align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--surface);border:1px solid var(--border);border-radius:10px;width:100%;max-width:660px;max-height:90vh;overflow-y:auto;padding:24px 28px}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+    .modal-header h3{font-size:1rem;font-weight:700}
+    .modal-close{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem}
+    .modal-close:hover{border-color:var(--red);color:var(--white)}
+    .modal-body{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .detail-block{display:flex;flex-direction:column;gap:3px}
+    .detail-label{font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+    .detail-value{font-size:.86rem;color:var(--white)}
+    .detail-full{grid-column:1/-1}
+    .section-divider{grid-column:1/-1;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);padding-top:8px;border-top:1px solid var(--border);margin-top:6px}
+    @media(max-width:600px){.stats-row{grid-template-columns:1fr 1fr}.modal-body{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="brand">LUCAS<span>MORAES</span>PROTEAM</div>
+    <div class="brand-sub">Painel de Alunos</div>
+  </div>
+  <button class="btn-refresh" onclick="loadData()">🔄 Atualizar</button>
+</header>
+
+<div class="dash">
+  <div class="stats-row">
+    <div class="stat-card highlight"><div class="sc-label">Total de alunos</div><div class="sc-value" id="statTotal">—</div><div class="sc-sub">fichas recebidas</div></div>
+    <div class="stat-card"><div class="sc-label">Este mês</div><div class="sc-value" id="statMes">—</div><div class="sc-sub">novas fichas</div></div>
+    <div class="stat-card"><div class="sc-label">Objetivo #1</div><div class="sc-value" id="statObj" style="font-size:1rem;padding-top:6px">—</div><div class="sc-sub">mais frequente</div></div>
+    <div class="stat-card"><div class="sc-label">Média IMC</div><div class="sc-value" id="statImc">—</div><div class="sc-sub">dos alunos</div></div>
+  </div>
+
+  <div class="toolbar">
+    <input class="search-input" id="searchInput" placeholder="🔍  Buscar por nome, e-mail ou objetivo…" oninput="renderTable()"/>
+    <select class="filter-select" id="filterObj" onchange="renderTable()">
+      <option value="">Todos os objetivos</option>
+      <option>Perda de gordura</option><option>Ganho de massa</option>
+      <option>Performance</option><option>Recomposição corporal</option>
+      <option>Saúde &amp; bem-estar</option><option>Outro</option>
+    </select>
+    <button class="btn-csv" onclick="exportCSV()">⬇ Exportar CSV</button>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th onclick="sortBy('Nome')"># Nome ↕</th>
+          <th onclick="sortBy('Data')">Data ↕</th>
+          <th>Peso</th><th>IMC</th><th>Objetivo</th><th>Dias/sem</th>
+          <th style="text-align:right">Detalhes</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr><td colspan="7" class="loading"><span class="spinner"></span>Carregando fichas…</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-header"><h3 id="modalTitle">Ficha do Aluno</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx5rNAMC97rprIHv6qL9QXbumaBwUt8AM34jO-DMBAPJIO5Jaa0BFa4hWk4HDHs9hYzhQ/exec';
+
+let allData = [];
+let sortKey = 'Data';
+let sortAsc = false;
+
+async function loadData() {
+  document.getElementById('tableBody').innerHTML = '<tr><td colspan="7" class="loading"><span class="spinner"></span>Carregando fichas…</td></tr>';
+  try {
+    const res = await fetch(SCRIPT_URL + '?t=' + Date.now());
+    const json = await res.json();
+    allData = json.data || [];
+    updateStats();
+    renderTable();
+  } catch(e) {
+    document.getElementById('tableBody').innerHTML = '<tr><td colspan="7" class="empty-table">❌ Erro ao carregar dados. Verifique a conexão.</td></tr>';
+  }
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent = allData.length;
+  const now = new Date();
+  const mes = allData.filter(p => {
+    const[d,m,y] = (p['Data']||'').split('/');
+    return +m === now.getMonth()+1 && +y === now.getFullYear();
+  }).length;
+  document.getElementById('statMes').textContent = mes;
+  if(allData.length) {
+    const freq = {};
+    allData.forEach(p => { const o = p['Objetivo']; if(o) freq[o]=(freq[o]||0)+1; });
+    const top = Object.entries(freq).sort((a,b)=>b[1]-a[1])[0];
+    document.getElementById('statObj').textContent = top ? top[0].split(' ')[0] : '—';
+    const imcs = allData.map(p=>parseFloat(p['IMC'])).filter(Boolean);
+    document.getElementById('statImc').textContent = imcs.length ? (imcs.reduce((a,b)=>a+b,0)/imcs.length).toFixed(1) : '—';
+  }
+}
+
+function renderTable() {
+  const q = (document.getElementById('searchInput').value||'').toLowerCase();
+  const obj = document.getElementById('filterObj').value;
+  let list = allData.filter(p => {
+    const match = (p['Nome']||'').toLowerCase().includes(q) || (p['Email']||'').toLowerCase().includes(q) || (p['Objetivo']||'').toLowerCase().includes(q);
+    return match && (!obj || p['Objetivo'] === obj);
+  });
+  list.sort((a,b) => {
+    let va = a[sortKey]||'', vb = b[sortKey]||'';
+    if(sortKey==='Data') {
+      const td = s => { const[d,m,y]=s.split('/'); return new Date(y,m-1,d); };
+      va=td(va); vb=td(vb);
+    }
+    return sortAsc ? (va>vb?1:-1) : (va<vb?1:-1);
+  });
+  const tbody = document.getElementById('tableBody');
+  if(!list.length) { tbody.innerHTML='<tr><td colspan="7" class="empty-table">Nenhuma ficha encontrada.</td></tr>'; return; }
+  tbody.innerHTML = list.map((p,i) => {
+    const days = (p['DiasTreino']||'').split(',').filter(Boolean).length;
+    const ri = allData.indexOf(p);
+    return `<tr>
+      <td class="td-name">${p['Nome']||'—'}</td>
+      <td class="td-date">${p['Data']||'—'}</td>
+      <td>${p['Peso(kg)']?p['Peso(kg)']+'kg':'—'}</td>
+      <td>${p['IMC']||'—'}</td>
+      <td><span class="badge-obj">${p['Objetivo']||'—'}</span></td>
+      <td>${days?days+'×/sem':'—'}</td>
+      <td><div class="td-actions"><button class="tbl-btn" onclick="openDetail(${ri})">👁 Ver ficha</button></div></td>
+    </tr>`;
+  }).join('');
+}
+
+function sortBy(key) { if(sortKey===key) sortAsc=!sortAsc; else{sortKey=key;sortAsc=true;} renderTable(); }
+
+function openDetail(idx) {
+  const p = allData[idx];
+  document.getElementById('modalTitle').textContent = p['Nome'] || 'Ficha do Aluno';
+  document.getElementById('modalBody').innerHTML = `
+    <div class="section-divider">Identificação</div>
+    <div class="detail-block"><div class="detail-label">Nome</div><div class="detail-value">${p['Nome']||'—'}</div></div>
+    <div class="detail-block"><div class="detail-label">Nascimento</div><div class="detail-value">${p['Nascimento']||'—'}</div></div>
+    <div class="detail-block"><div class="detail-label">Sexo</div><div class="detail-value">${p['Sexo']||'—'}</div></div>
+    <div class="detail-block"><div class="detail-label">Data da Ficha</div><div class="detail-value">${p['Data']||'—'}</div></div>
+    <div class="detail-block"><div class="detail-label">E-mail</div><div class="detail-value">${p['Email']||'—'}</div></div>
+    <div class="detail-block"><div class="detail-label">WhatsApp</div><div class="detail-value">${p['Telefone']||'—'}</div></div>
+    <div class="section-divider">Medidas</div>
+    <div class="detail-block"><div class="detail-label">Peso</div><div class="detail-value">${p['Peso(kg)']?p['Peso(kg)']+' kg':'—'}</div></div>
+    <div class="detail-block"><div class="detail-label">Altura</div><div class="detail-value">${p['Altura(cm)']?p['Altura(cm)']+' cm':'—'}</div></div>
+    <div class="detail-block"><div class="detail-label">IMC</div><div class="detail-value">${p['IMC']||'—'}</div></div>
+    <div class="detail-block"><div class="detail-label">% Gordura</div><div class="detail-value">${p['Gordura%']?p['Gordura%']+'%':'—'}</div></div>
+    <div class="detail-block"><div class="detail-label">Nível Atividade</div><div class="detail-value">${p['Nivel']||'—'}</div></div>
+    <div class="detail-block detail-full"><div class="detail-label">Restrições</div><div class="detail-value">${p['Restricoes']||'—'}</div></div>
+    <div class="section-divider">Alimentação</div>
+    <div class="detail-block"><div class="detail-label">Café da manhã</div><div class="detail-value">${p['CafeManha']||'—'}</div></div>
+    <div class="detail-block"><div class="detail-label">Lanche manhã</div><div class="detail-value">${p['LancheManha']||'—'}</div></div>
+    <div class="detail-block"><div class="detail-label">Almoço</div><div class="detail-value">${p['Almoco']||'—'}</div></div>
+    <div class="detail-block"><div class="detail-label">Lanche tarde</div><div class="detail-value">${p['LancheTarde']||'—'}</div></div>
+    <div class="detail-block"><div class="detail-label">Jantar</div><div class="detail-value">${p['Jantar']||'—'}</div></div>
+    <div class="detail-block"><div class="detail-label">Ceia</div><div class="detail-value">${p['Ceia']||'—'}</div></div>
+    <div class="detail-block"><div class="detail-label">Ingestão hídrica</div><div class="detail-value">${p['Hidrica']||'—'}</div></div>
+    <div class="detail-block"><div class="detail-label">Preferidos</div><div class="detail-value">${p['Preferidos']||'—'}</div></div>
+    <div class="detail-block"><div class="detail-label">Não consome</div><div class="detail-value">${p['NaoConsome']||'—'}</div></div>
+    <div class="section-divider">Treino & Objetivo</div>
+    <div class="detail-block"><div class="detail-label">Objetivo</div><div class="detail-value">${p['Objetivo']||'—'}</div></div>
+    <div class="detail-block"><div class="detail-label">Tipo de treino</div><div class="detail-value">${p['TipoTreino']||'—'}</div></div>
+    <div class="detail-block detail-full"><div class="detail-label">Dias de treino</div><div class="detail-value">${p['DiasTreino']||'—'}</div></div>
+    <div class="detail-block detail-full"><div class="detail-label">Observações</div><div class="detail-value">${p['Observacoes']||'—'}</div></div>
+  `;
+  document.getElementById('detailModal').classList.add('open');
+}
+
+function closeModal() { document.getElementById('detailModal').classList.remove('open'); }
+document.getElementById('detailModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
+
+function exportCSV() {
+  if(!allData.length) { alert('Nenhum dado para exportar.'); return; }
+  const headers = Object.keys(allData[0]);
+  const rows = [headers, ...allData.map(p => headers.map(h => p[h]||''))];
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const uri = 'data:text/csv;charset=utf-8,' + encodeURIComponent('\uFEFF' + csv);
+  const a = document.createElement('a'); a.href=uri; a.download='LUCASMORAESPROTEAM_alunos.csv'; a.click();
+}
+
+loadData();
+</script>
+</body>
+</html>
